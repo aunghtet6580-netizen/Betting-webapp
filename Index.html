@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>BettingX Pro</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Pyidaungsu', sans-serif; background-color: var(--tg-theme-bg-color); color: var(--tg-theme-text-color); }
+        .glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); }
+        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .active-tab { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-900 text-white pb-24">
+
+    <div id="dashboard" class="tab-content active-tab p-5">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-xl font-bold">မင်္ဂလာပါ၊ User</h1>
+                <p class="text-xs text-slate-400">BettingX မှ ကြိုဆိုပါသည်</p>
+            </div>
+            <div class="text-right">
+                <p class="text-xs text-slate-400 font-bold uppercase">Balance</p>
+                <h2 class="text-2xl font-bold text-blue-400" id="userBalance">101,000 MMK</h2>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <button class="bg-green-600 p-4 rounded-2xl flex flex-col items-center shadow-lg"><i class="fas fa-plus-circle mb-2"></i> ငွေသွင်း</button>
+            <button class="bg-blue-600 p-4 rounded-2xl flex flex-col items-center shadow-lg"><i class="fas fa-wallet mb-2"></i> ငွေထုတ်</button>
+        </div>
+
+        <h3 class="font-bold mb-3"><i class="fas fa-fire text-orange-500 mr-2"></i> လက်ရှိလောင်းကြေးများ</h3>
+        <div class="glass-card p-4 flex justify-between items-center mb-3">
+            <div>
+                <p class="text-sm font-bold">Chelsea vs Arsenal</p>
+                <p class="text-xs text-slate-400">အသင်း A | 1.85</p>
+            </div>
+            <span class="text-green-400 font-bold">5,000 K</span>
+        </div>
+    </div>
+
+    <div id="betting" class="tab-content p-5">
+        <div class="flex gap-2 mb-6">
+            <button onclick="switchBetMode('2D')" id="btn2D" class="flex-1 bg-blue-600 py-2 rounded-xl font-bold">2D</button>
+            <button onclick="switchBetMode('3D')" id="btn3D" class="flex-1 bg-slate-700 py-2 rounded-xl font-bold text-slate-400">3D</button>
+        </div>
+        
+        <div class="glass-card p-6">
+            <label class="block text-sm mb-2 text-slate-400">လောင်းမည့်ဂဏန်း</label>
+            <input type="number" id="betNum" class="w-full bg-slate-800 border-none rounded-xl p-4 text-2xl font-bold text-center mb-4" placeholder="00">
+            
+            <label class="block text-sm mb-2 text-slate-400">လောင်းကြေးပမာဏ</label>
+            <input type="number" id="betAmt" class="w-full bg-slate-800 border-none rounded-xl p-4 text-xl font-bold text-center mb-6" placeholder="1000">
+            
+            <button onclick="placeBet()" class="w-full bg-blue-600 py-4 rounded-2xl font-bold text-lg shadow-xl">လောင်းမည်</button>
+        </div>
+    </div>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-slate-800 border-t border-slate-700 p-3 flex justify-around items-center">
+        <button onclick="showTab('dashboard')" class="flex flex-col items-center text-blue-400"><i class="fas fa-home text-xl"></i><span class="text-[10px] mt-1">Dashboard</span></button>
+        <button onclick="showTab('football')" class="flex flex-col items-center text-slate-500"><i class="fas fa-futbol text-xl"></i><span class="text-[10px] mt-1">Football</span></button>
+        <button onclick="showTab('betting')" class="flex flex-col items-center text-slate-500"><i class="fas fa-dice text-xl"></i><span class="text-[10px] mt-1">2D/3D</span></button>
+        <button onclick="showTab('history')" class="flex flex-col items-center text-slate-500"><i class="fas fa-history text-xl"></i><span class="text-[10px] mt-1">History</span></button>
+    </nav>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        function showTab(id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
+            document.getElementById(id).classList.add('active-tab');
+        }
+
+        function placeBet() {
+            const num = document.getElementById('betNum').value;
+            const amt = document.getElementById('betAmt').value;
+            if(!num || !amt) return tg.showAlert("အချက်အလက်ပြည့်စုံစွာဖြည့်ပါ");
+            
+            tg.sendData(JSON.stringify({type: "2D", number: num, amount: amt}));
+            tg.close();
+        }
+    </script>
+</body>
+</html>
